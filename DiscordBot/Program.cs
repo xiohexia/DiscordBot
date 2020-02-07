@@ -20,7 +20,7 @@ namespace DiscordBot
         {
             discord = new DiscordClient(new DiscordConfiguration
             {
-                Token = "Njc1MTU3MTMwNzQyOTg4ODMw.XjzILg.gmAA66iALCV2p5_prPQSLh88HjI",
+                Token = "Njc1MTU3MTMwNzQyOTg4ODMw.Xj2h5Q.pyZ6RRbNOwKWGNOwyTb-5kH7AYw",
                 TokenType = TokenType.Bot,
                 UseInternalLogHandler = true,
                 LogLevel = LogLevel.Debug

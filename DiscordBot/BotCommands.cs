@@ -17,11 +17,16 @@ namespace DiscordBot
             await ctx.RespondAsync($"Hello There... {ctx.User.Mention}");
         }
 
-        [Command("eggplant"), Description("Eggplant Emoji")]
-        public async Task Email(CommandContext ctx)
+        [Command("emoji"), Description("Usage: .emoji :eggplant:")]
+        public async Task Emoji(CommandContext ctx, [Description("Emoji!")] DiscordEmoji emoji)
         {
-            DiscordEmoji emoji = DiscordEmoji.FromName(ctx.Client, ":eggplant:");
-            await ctx.RespondAsync($"{emoji}");
+            await ctx.RespondAsync($"{ctx.User.Mention}, {emoji}");
+        }
+
+        [Command("emoji2"), Description("Usage: .emoji :eggplant:")]
+        public async Task Emoji2(CommandContext ctx, [Description("Emoji!")] DiscordGuildEmoji emoji)
+        {
+            await ctx.RespondAsync($"{ctx.User.Mention}, {emoji}");
         }
     }
 }
