@@ -19,13 +19,12 @@ namespace DiscordBot
             discord = new DiscordClient(new DiscordConfiguration
             {
                 Token = app.Default.Auth,
-                TokenType = TokenType.Bot,
                 UseInternalLogHandler = true,
                 LogLevel = LogLevel.Debug
             });
             commands = discord.UseCommandsNext(new CommandsNextConfiguration
             {
-                StringPrefix = "."
+                StringPrefix = app.Default.Prefix
             });
             commands.RegisterCommands<BotCommands>();
             await discord.ConnectAsync();

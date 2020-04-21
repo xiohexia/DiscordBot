@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using DSharpPlus;
 using DSharpPlus.CommandsNext;
 using DSharpPlus.CommandsNext.Attributes;
+using DSharpPlus.CommandsNext.Converters;
 using DSharpPlus.Entities;
 
 namespace DiscordBot
@@ -23,10 +25,11 @@ namespace DiscordBot
             await ctx.RespondAsync($"{ctx.User.Mention}, {emoji}");
         }
 
-        [Command("emoji2"), Description("Usage: .emoji :eggplant:")]
-        public async Task Emoji2(CommandContext ctx, [Description("Emoji!")] DiscordGuildEmoji emoji)
+        [Command("spam"), Description("Usage: .spam @User")]
+        public async Task Spam(CommandContext ctx, [Description("The person you want to spam!")] DiscordMember discordMember)
         {
-            await ctx.RespondAsync($"{ctx.User.Mention}, {emoji}");
+            await discordMember.SendMessageAsync("Testing!!!");
+            //await ctx.RespondAsync($"{discordMember.Mention}");
         }
     }
 }
