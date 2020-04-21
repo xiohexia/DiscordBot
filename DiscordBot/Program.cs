@@ -29,7 +29,7 @@ namespace DiscordBot
             {
                 StringPrefix = "."
             });
-            commands.RegisterCommands<BotCommands>(); 
+            commands.RegisterCommands<BotCommands>();
             await discord.ConnectAsync();
             await Task.Delay(-1);
         }
