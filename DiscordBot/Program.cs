@@ -11,8 +11,6 @@ namespace DiscordBot
         static CommandsNextModule commands;
         static void Main(string[] args)
         {
-            //https://discordapp.com/oauth2/authorize?client_id=675157130742988830&scope=bot&permissions=383040
-
             MainAsync(args).ConfigureAwait(false).GetAwaiter().GetResult();
         }
 
