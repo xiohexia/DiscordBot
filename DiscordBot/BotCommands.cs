@@ -13,23 +13,54 @@ namespace DiscordBot
 {
     public class BotCommands
     {
-        [Command("hi"), Description("Hello There...")]
-        public async Task Hi(CommandContext ctx)
+        //[Command("hi"), Description("Hello There...")]
+        //public async Task Hi(CommandContext ctx)
+        //{
+        //    await ctx.RespondAsync($"Hello There... {ctx.User.Mention}");
+        //}
+
+        //[Command("emoji"), Description("Usage: .emoji :eggplant:")]
+        //public async Task Emoji(CommandContext ctx, [Description("Emoji!")] DiscordEmoji emoji)
+        //{
+        //    await ctx.RespondAsync($"{ctx.User.Mention}, {emoji}");
+        //}
+
+        //[Command("spam"), Description("Usage: .spam @person")]
+        //public async Task Spam(CommandContext ctx, [Description("The person you want to spam!")] DiscordMember discordMember)
+        //{
+        //    //await ctx.RespondAsync($"{discordMember.Mention}");
+        //}
+
+
+        [Command("check"), Description("Usage: \n.check evga \n.check amazon \n.check newegg")]
+        public async Task Check(CommandContext ctx, [Description("Site you want to check.\nUse: evga, amazon, newegg")]string site)
         {
-            await ctx.RespondAsync($"Hello There... {ctx.User.Mention}");
+
+            if (Program.ValidChoices.Contains(site))
+            {
+                bool isAvailable = PageChecker.Check(site);
+                string isAvailableStr = isAvailable ? "Available" : "Out of Stock";
+                string properSiteName = Program.ProperNames[site];
+                string url = Program.Urls[site];
+                await ctx.RespondAsync($"{ctx.User.Mention} **{properSiteName}** is **{isAvailableStr}** -- {url}").ConfigureAwait(false);
+            }
+            else await ctx.RespondAsync($"{ctx.User.Mention} \"{site}\" is not a valid choice. See .help check").ConfigureAwait(false);
         }
 
-        [Command("emoji"), Description("Usage: .emoji :eggplant:")]
-        public async Task Emoji(CommandContext ctx, [Description("Emoji!")] DiscordEmoji emoji)
+        //TODO: Add CheckAll BotCommand
+
+        [Command("sub"), Description("Usage: .sub")]
+        public async Task Sub(CommandContext ctx)
         {
-            await ctx.RespondAsync($"{ctx.User.Mention}, {emoji}");
+            if (SubHandler.Add(ctx)) await ctx.RespondAsync($"{ctx.Member.Mention}, You are now subscribed.").ConfigureAwait(false);
+            else await ctx.RespondAsync($"{ctx.Member.Mention}, You were already subscribed.").ConfigureAwait(false);
         }
 
-        [Command("spam"), Description("Usage: .spam @User")]
-        public async Task Spam(CommandContext ctx, [Description("The person you want to spam!")] DiscordMember discordMember)
+        [Command("unsub"), Description("Usage: .unsub")]
+        public async Task Unsub(CommandContext ctx)
         {
-            await discordMember.SendMessageAsync("Testing!!!");
-            //await ctx.RespondAsync($"{discordMember.Mention}");
+            if (SubHandler.Remove(ctx)) await ctx.RespondAsync($"{ctx.Member.Mention}, You are no longer subscribed.").ConfigureAwait(false);
+            else await ctx.RespondAsync($"{ctx.Member.Mention}, You were not subscribed.").ConfigureAwait(false);
         }
     }
 }
