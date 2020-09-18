@@ -22,6 +22,7 @@ namespace DiscordBot
                 chromeDriverService.SuppressInitialDiagnosticInformation = true;
                 //chromeOptions.AddArgument("start-maximized");
                 chromeOptions.AddArgument("headless");
+                chromeOptions.AddArgument("no-sandbox");
                 chromeOptions.AddUserProfilePreference("download.prompt_for_download", false);
                 chromeOptions.AddUserProfilePreference("disable-popup-blocking", "true");
                 ChromeDriver driver = new ChromeDriver(chromeDriverService, chromeOptions);
@@ -80,9 +81,12 @@ namespace DiscordBot
             driver.Url = Program.Urls["newegg"];
             string titleXPath = "//span[contains(text(),'EVGA GeForce RTX 3080 FTW3 ULTRA GAMING Video Card, 10G-P5-3897-KR, 10GB GDDR6X, iCX3 Technology, ARGB LED, Metal Backplate')]";
             new WebDriverWait(driver, TimeSpan.FromMinutes(1)).Until(ExpectedConditions.ElementIsVisible(By.XPath(titleXPath)));
-            IWebElement comingSoon = driver.FindElement(By.XPath("//div[@class='aside']//span[contains(text(),'COMING SOON')]"));
-            IWebElement preRelease = driver.FindElement(By.XPath("//div[@class='grpNote']//span[contains(text(),'PRE-RELEASE.')]"));
-            if (comingSoon.Displayed && preRelease.Displayed) return false;
+            //IWebElement comingSoon = driver.FindElement(By.XPath("//div[@class='aside']//span[contains(text(),'COMING SOON')]"));
+            //IWebElement preRelease = driver.FindElement(By.XPath("//div[@class='grpNote']//span[contains(text(),'PRE-RELEASE.')]"));
+            IWebElement outOfStock = driver.FindElement(By.XPath("//div[@class='aside']/div[@id='landingpage-topshipping']/div/div/span[contains(text(),'OUT OF STOCK')]"));
+            IWebElement outOfStock2 = driver.FindElement(By.XPath("//div[@class='grpLayout']/div[@class='grpNote']//span[contains(text(),'OUT OF STOCK')]"));
+            //if (comingSoon.Displayed && preRelease.Displayed) return false;
+            if (outOfStock.Displayed && outOfStock2.Displayed) return false;
             else return true;
         }
 
