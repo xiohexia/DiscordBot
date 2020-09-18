@@ -35,7 +35,6 @@ namespace DiscordBot
         [Command("check"), Description("Usage: \n.check evga \n.check amazon \n.check newegg")]
         public async Task Check(CommandContext ctx, [Description("Site you want to check.\nUse: evga, amazon, newegg")]string site)
         {
-
             if (Program.ValidChoices.Contains(site))
             {
                 bool isAvailable = PageChecker.Check(site);

@@ -12,6 +12,12 @@ namespace DiscordBot
     {
         static string fileName = "subs.csv";
 
+        static CsvConfiguration csvConfig = new CsvConfiguration(CultureInfo.CurrentCulture)
+        {
+            HasHeaderRecord = false,
+            HeaderValidated = null
+        };
+
         static public bool Add(CommandContext ctx)
         {
             Sub sub = new Sub(ctx.User.Id, ctx.Guild.Id);
@@ -39,11 +45,6 @@ namespace DiscordBot
 
         static public List<Sub> GetSubs()
         {
-            CsvConfiguration csvConfig = new CsvConfiguration(CultureInfo.CurrentCulture)
-            {
-                HasHeaderRecord = false,
-                HeaderValidated = null
-            };
             using (var reader = new StreamReader(fileName))
             using (var csv = new CsvReader(reader, csvConfig))
             {
@@ -53,12 +54,6 @@ namespace DiscordBot
 
         static private void SaveSub(Sub sub)
         {
-            CsvConfiguration csvConfig = new CsvConfiguration(CultureInfo.CurrentCulture)
-            {
-                //HasHeaderRecord = !File.Exists(fileName)
-                HasHeaderRecord = false,
-                HeaderValidated = null
-            };
             using (FileStream fileStream = new FileStream(fileName, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
             {
                 using (StreamWriter streamWriter = new StreamWriter(fileStream))
@@ -73,12 +68,6 @@ namespace DiscordBot
 
         static private void OverwriteSubs(List<Sub> subs)
         {
-            CsvConfiguration csvConfig = new CsvConfiguration(CultureInfo.CurrentCulture)
-            {
-                //HasHeaderRecord = true,
-                HasHeaderRecord = false,
-                HeaderValidated = null
-            };
             using (var writer = new StreamWriter(fileName))
             using (var csv = new CsvWriter(writer, csvConfig))
             {

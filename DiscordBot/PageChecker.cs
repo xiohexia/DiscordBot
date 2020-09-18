@@ -13,34 +13,41 @@ namespace DiscordBot
     {
         static public bool Check(string type)
         {
-            ChromeOptions chromeOptions = new ChromeOptions();
-            ChromeDriverService chromeDriverService = ChromeDriverService.CreateDefaultService(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-            chromeDriverService.HideCommandPromptWindow = true;
-            chromeDriverService.SuppressInitialDiagnosticInformation = true;
-            //chromeOptions.AddArgument("start-maximized");
-            chromeOptions.AddArgument("headless");
-            chromeOptions.AddUserProfilePreference("download.prompt_for_download", false);
-            chromeOptions.AddUserProfilePreference("disable-popup-blocking", "true");
-            ChromeDriver driver = new ChromeDriver(chromeDriverService, chromeOptions);
-            bool result;
-            switch (type)
+            bool result = false;
+            try
             {
-                case "evga":
-                    result = evga(driver);
-                    break;
-                case "amazon":
-                    result = amazon(driver);
-                    break;
-                case "newegg":
-                    result = newegg(driver);
-                    break;
-                default:
-                    result = false;
-                    break;
+                ChromeOptions chromeOptions = new ChromeOptions();
+                ChromeDriverService chromeDriverService = ChromeDriverService.CreateDefaultService(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+                chromeDriverService.HideCommandPromptWindow = true;
+                chromeDriverService.SuppressInitialDiagnosticInformation = true;
+                //chromeOptions.AddArgument("start-maximized");
+                chromeOptions.AddArgument("headless");
+                chromeOptions.AddUserProfilePreference("download.prompt_for_download", false);
+                chromeOptions.AddUserProfilePreference("disable-popup-blocking", "true");
+                ChromeDriver driver = new ChromeDriver(chromeDriverService, chromeOptions);
+                
+                switch (type)
+                {
+                    case "evga":
+                        result = evga(driver);
+                        break;
+                    case "amazon":
+                        result = amazon(driver);
+                        break;
+                    case "newegg":
+                        result = newegg(driver);
+                        break;
+                    default:
+                        break;
+                }
+                driver.Close();
+                driver.Quit();
+                driver.Dispose();
             }
-            driver.Close();
-            driver.Quit();
-            driver.Dispose();
+            catch (Exception e)
+            {
+                Program.discord.DebugLogger.LogMessage(DSharpPlus.LogLevel.Critical, $"PageChecker:Check() {type}", e.Message, DateTime.Now);
+            }
             return result;
         }
 
@@ -81,15 +88,9 @@ namespace DiscordBot
 
         static public Dictionary<string, bool> CheckAll()
         {
-            List<string> sites = new List<string>()
-            {
-                "evga",
-                "newegg",
-                "amazon"
-            };
             Dictionary<string, bool> results = new Dictionary<string, bool>();
             //sites.ForEach(site => results.Add(site, Check(site)));
-            Parallel.ForEach(sites, site => results.Add(site, Check(site)));
+            Parallel.ForEach(Program.ValidChoices, site => results.Add(site, Check(site)));
             //results.Add("test", true);
             return results;
         }

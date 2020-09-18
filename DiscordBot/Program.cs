@@ -32,7 +32,7 @@ namespace DiscordBot
             { "test", "https://google.com" }
         };
 
-        static DiscordClient discord;
+        static public DiscordClient discord;
         static CommandsNextModule commands;
         static async Task Main(string[] args)
         {
