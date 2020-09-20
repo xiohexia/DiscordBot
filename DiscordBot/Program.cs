@@ -42,7 +42,7 @@ namespace DiscordBot
 
         static async Task CheckLoop()
         {
-            int delay = 1 * 60 * 1000;
+            int delay = 5 * 60 * 1000;
             while (true)
             {
                 try
