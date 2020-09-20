@@ -26,10 +26,11 @@ namespace DiscordBot
             });
             chromeOptions.AddUserProfilePreference("download.prompt_for_download", false);
             chromeOptions.AddUserProfilePreference("disable-popup-blocking", "true");
-            ChromeDriver driver = new ChromeDriver(chromeDriverService, chromeOptions);
+            ChromeDriver driver = null;
             bool result = false;
             try
             {
+                driver = new ChromeDriver(chromeDriverService, chromeOptions);
                 switch (type)
                 {
                     case "evga":
@@ -49,9 +50,12 @@ namespace DiscordBot
             {
                 Program.discord.DebugLogger.LogMessage(DSharpPlus.LogLevel.Critical, $"PageChecker:Check() {type}", e.Message, DateTime.Now);
             }
-            driver.Close();
-            driver.Quit();
-            driver.Dispose();
+            if(driver != null)
+            {
+                driver.Close();
+                driver.Quit();
+                driver.Dispose();
+            }
             return result;
         }
 
