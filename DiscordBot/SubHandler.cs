@@ -1,78 +1,96 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection.PortableExecutable;
 using CsvHelper;
 using CsvHelper.Configuration;
 using DSharpPlus.CommandsNext;
 
 namespace DiscordBot
 {
-    static public class SubHandler
+    public class SubHandler
     {
-        static string fileName = "subs.csv";
-
-        static CsvConfiguration csvConfig = new CsvConfiguration(CultureInfo.CurrentCulture)
+        private readonly Config config;
+        private List<Sub> subs;
+        private CsvConfiguration csvConfig = new CsvConfiguration(CultureInfo.CurrentCulture)
         {
             HasHeaderRecord = false,
             HeaderValidated = null
         };
 
-        static public bool Add(CommandContext ctx)
+        public SubHandler(Config config)
+        {
+            this.config = config;
+            subs = SyncFromFile();
+        }
+
+        public List<Sub> Subs => subs;
+
+        public bool Add(CommandContext ctx)
         {
             Sub sub = new Sub(ctx.User.Id, ctx.Guild.Id);
-            List<Sub> subs = GetSubs();
             if (!subs.Contains(sub))
             {
-                SaveSub(sub);
+                subs.Add(sub);
+                AppendSubToFile(sub);
                 return true;
             }
             else return false;
         }
 
-        static public bool Remove(CommandContext ctx)
+        public bool Remove(CommandContext ctx)
         {
             Sub sub = new Sub(ctx.User.Id, ctx.Guild.Id);
-            List<Sub> subs = GetSubs();
             if (subs.Contains(sub))
             {
                 subs.Remove(sub);
-                OverwriteSubs(subs);
+                OverwriteSubsFile(subs);
                 return true;
             }
             else return false;
         }
 
-        static public List<Sub> GetSubs()
+        private List<Sub> SyncFromFile()
         {
-            using (var reader = new StreamReader(fileName))
-            using (var csv = new CsvReader(reader, csvConfig))
+            Directory.CreateDirectory(Path.GetDirectoryName(config.SubscriptionsFullPath));
+            using (var fileStream = new FileStream(config.SubscriptionsFullPath, FileMode.OpenOrCreate, FileAccess.Read, FileShare.None))
             {
-                return csv.GetRecords<Sub>().ToList();
-            }
-        }
-
-        static private void SaveSub(Sub sub)
-        {
-            using (FileStream fileStream = new FileStream(fileName, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
-            {
-                using (StreamWriter streamWriter = new StreamWriter(fileStream))
+                using (var streamReader = new StreamReader(fileStream))
                 {
-                    using (var csv = new CsvWriter(streamWriter, csvConfig))
+                    using (var csv = new CsvReader(streamReader, csvConfig))
                     {
-                        csv.WriteRecords(new List<Sub>() { sub });
+                        return csv.GetRecords<Sub>().ToList();
                     }
                 }
             }
         }
 
-        static private void OverwriteSubs(List<Sub> subs)
+        private void AppendSubToFile(Sub sub)
         {
-            using (var writer = new StreamWriter(fileName))
-            using (var csv = new CsvWriter(writer, csvConfig))
+            FileWriter(FileMode.Append, new List<Sub>() { sub });
+        }
+
+        private void OverwriteSubsFile(List<Sub> subs)
+        {
+            FileWriter(FileMode.Truncate, subs);
+        }
+
+        private void FileWriter(FileMode fileMode, List<Sub> subs)
+        {
+            using (var fileStream = new FileStream(config.SubscriptionsFullPath, fileMode, FileAccess.Write, FileShare.None))
             {
-                csv.WriteRecords(subs);
+                using (var streamWriter = new StreamWriter(fileStream))
+                {
+                    using (var csv = new CsvWriter(streamWriter, csvConfig))
+                    {
+                        csv.WriteRecords(subs);
+                    }
+                }
             }
         }
+
+
     }
 }

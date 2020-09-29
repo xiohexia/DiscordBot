@@ -13,6 +13,17 @@ namespace DiscordBot
 {
     public class BotCommands
     {
+        private SubHandler subHandler;
+        private PageChecker pageChecker;
+        private Config config;
+
+        public BotCommands(SubHandler subHandler, PageChecker pageChecker, Config config)
+        {
+            this.subHandler = subHandler;
+            this.pageChecker = pageChecker;
+            this.config = config;
+        }
+        
         //[Command("hi"), Description("Hello There...")]
         //public async Task Hi(CommandContext ctx)
         //{
@@ -31,16 +42,15 @@ namespace DiscordBot
         //    //await ctx.RespondAsync($"{discordMember.Mention}");
         //}
 
-
         [Command("check"), Description("Usage: \n.check evga \n.check amazon \n.check newegg")]
         public async Task Check(CommandContext ctx, [Description("Site you want to check.\nUse: evga, amazon, newegg")]string site)
         {
-            if (Program.ValidChoices.Contains(site))
+            if (config.ValidChoices.Contains(site))
             {
-                bool isAvailable = PageChecker.Check(site);
+                bool isAvailable = pageChecker.Check(site);
                 string isAvailableStr = isAvailable ? "Available" : "Out of Stock";
-                string properSiteName = Program.ProperNames[site];
-                string url = Program.Urls[site];
+                string properSiteName = config.ProperNames[site];
+                string url = config.Urls[site];
                 await ctx.RespondAsync($"{ctx.User.Mention} **{properSiteName}** is **{isAvailableStr}** -- {url}").ConfigureAwait(false);
             }
             else await ctx.RespondAsync($"{ctx.User.Mention} \"{site}\" is not a valid choice. See .help check").ConfigureAwait(false);
@@ -51,14 +61,14 @@ namespace DiscordBot
         [Command("sub"), Description("Usage: .sub")]
         public async Task Sub(CommandContext ctx)
         {
-            if (SubHandler.Add(ctx)) await ctx.RespondAsync($"{ctx.Member.Mention}, You are now subscribed.").ConfigureAwait(false);
+            if (subHandler.Add(ctx)) await ctx.RespondAsync($"{ctx.Member.Mention}, You are now subscribed.").ConfigureAwait(false);
             else await ctx.RespondAsync($"{ctx.Member.Mention}, You were already subscribed.").ConfigureAwait(false);
         }
 
         [Command("unsub"), Description("Usage: .unsub")]
         public async Task Unsub(CommandContext ctx)
         {
-            if (SubHandler.Remove(ctx)) await ctx.RespondAsync($"{ctx.Member.Mention}, You are no longer subscribed.").ConfigureAwait(false);
+            if (subHandler.Remove(ctx)) await ctx.RespondAsync($"{ctx.Member.Mention}, You are no longer subscribed.").ConfigureAwait(false);
             else await ctx.RespondAsync($"{ctx.Member.Mention}, You were not subscribed.").ConfigureAwait(false);
         }
     }
